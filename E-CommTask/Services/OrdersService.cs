@@ -48,7 +48,6 @@ namespace E_CommTask.Services
         {
             try
             {
-                order.CreatedAt = DateTime.UtcNow;
                 _DbContext.Orders.Add( order );
                 await _DbContext.SaveChangesAsync();
                 return order.Id;

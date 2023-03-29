@@ -9,7 +9,7 @@ namespace E_CommTask.Models
             Id = order.Id;
             Name = order.Name;
             TotalPrice = order.TotalPrice;
-            CreatedAt = order.CreatedAt;
+            CreatedAt = order.CreatedAt.ToLocalTime().ToString("G");
 
             Products = new List<ProductResponseModel>();
 
@@ -23,7 +23,7 @@ namespace E_CommTask.Models
         public string Name { get; set; }
         public decimal TotalPrice { get; set; }
         public List<ProductResponseModel> Products { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public string CreatedAt { get; set; }
 
     }
 }

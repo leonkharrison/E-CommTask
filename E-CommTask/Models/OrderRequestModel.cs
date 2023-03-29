@@ -27,12 +27,13 @@ namespace E_CommTask.Models
             return isValid;
         }
 
-        public Order MapFromRequest()
+        public Order MapToOrder()
         {
             return new Order
             {
                 Name = this.Name,
-                Products = new List<ProductOrders>()
+                Products = new List<ProductOrders>(),
+                CreatedAt = DateTime.UtcNow,
             };
         }
     }
