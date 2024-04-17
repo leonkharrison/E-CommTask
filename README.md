@@ -23,7 +23,6 @@ This project uses a SQLite database and EntityFramwork as the ORM. DB file is pl
 
 # Improvements / Next steps
 Some notes on where I would go next with a project such as this
-- Improved caching of data to make it thread-safe and move to an actual cache, at the moment its being refreshed everytime the products service is accessed which is unnecessary 
 - Auth to allow a users order to be stored against personal details so they can view their order at another time
   - Including guest tokens and orders stored against a name ( like now ) so that guests can also view their order
 - At the moment its possible to order multiple of the same prduct, which is fine but it saves each product as a new ProductOrder which isnt very efficient.
