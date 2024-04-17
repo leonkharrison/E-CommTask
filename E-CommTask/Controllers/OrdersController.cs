@@ -9,11 +9,11 @@ namespace E_CommTask.Controllers
     [ApiController]
     public class OrdersController : ControllerBase
     {
-        IOrdersService _ordersService;
-        IProductService _productService;
+        IOrdersRepo _ordersService;
+        IProductRepo _productService;
         ILogger<OrdersController> _logger;
 
-        public OrdersController( IOrdersService ordersService, IProductService productService, ILogger<OrdersController> logger ) 
+        public OrdersController( IOrdersRepo ordersService, IProductRepo productService, ILogger<OrdersController> logger ) 
         {
             _ordersService = ordersService;
             _productService = productService;
@@ -22,7 +22,7 @@ namespace E_CommTask.Controllers
 
         [HttpPost]
         [Route("api/orders")]
-        public async Task<dynamic> CreateOrder( OrderRequestModel orderRequest )
+        public async Task<IActionResult> CreateOrder( OrderRequestModel orderRequest )
         {
             _logger.LogInformation( "Attempting to create a new order..." );
             // Validate the request
@@ -47,7 +47,7 @@ namespace E_CommTask.Controllers
             // Get the products from the cache to add to the order
             foreach( var productId in orderRequest.ProductIds )
             {
-                var product = _productService.ProductsCache.SingleOrDefault( p => p.Id == productId );
+                var product = await _productService.GetAsync(productId);
 
                 if( product == null )
                 {
@@ -58,18 +58,18 @@ namespace E_CommTask.Controllers
                 order.TotalPrice += product.Price;
             }
 
-            await _ordersService.Insert( order );
+            await _ordersService.InsertAsync( order );
 
             _logger.LogInformation( $"Order created successfully" );
 
-            return Ok( $"Order Complete! Total price: {order.TotalPrice}" );
+            return NoContent();
         }
 
         [HttpGet]
         [Route("api/orders/{id:int}")]
-        public async Task<dynamic> GetOrderById( int id )
+        public async Task<IActionResult> GetOrderById( int id )
         {
-            var order = await _ordersService.GetById( id );
+            var order = await _ordersService.GetAsync( id );
 
             if( order == null )
             {
@@ -81,20 +81,20 @@ namespace E_CommTask.Controllers
 
         [HttpGet]
         [Route("api/orders")]
-        public async Task<dynamic> GetOrders()
+        public async Task<IActionResult> GetOrders()
         {
             _logger.LogInformation( "Attmepting to get all orders" );
 
-            var orders = await _ordersService.GetAll();
+            var orders = await _ordersService.GetAllAsync();
 
-            if( orders == null || orders.Count == 0 )
+            if( orders == null || orders.Count() == 0 )
             {
                 _logger.LogInformation( "No orders found" );
                 return NotFound( "No orders have been placed" );
             }
 
-            _logger.LogInformation( $"Found {orders.Count} orders" );
-            return orders.Select( o => new OrderResponseModel( o ) );
+            _logger.LogInformation( $"Found {orders.Count()} orders" );
+            return Ok(orders.Select( o => new OrderResponseModel( o ) ));
         }
     }
 }

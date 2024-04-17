@@ -7,10 +7,10 @@ namespace E_CommTask.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        IProductService _productService;
+        IProductRepo _productService;
         ILogger<ProductController> _logger;
 
-        public ProductController( IProductService productService, ILogger<ProductController> logger )
+        public ProductController( IProductRepo productService, ILogger<ProductController> logger )
         {
             _productService = productService;
             _logger = logger;
@@ -18,25 +18,25 @@ namespace E_CommTask.Controllers
 
         [HttpGet]
         [Route("api/products")]
-        public async Task<dynamic> GetAllProducts()
+        public async Task<IActionResult> GetAllProducts()
         {
             _logger.LogInformation( "Trying to get all products..." );
 
-            var allProducts = await _productService.GetAll();
+            var allProducts = await _productService.GetAllAsync();
 
-            if( allProducts == null || allProducts.Count == 0 )
+            if( allProducts is null || allProducts.Count() == 0 )
             {
                 _logger.LogInformation( "No products found" );
                 return NotFound( "No products" );
             }
 
-            _logger.LogInformation( $"{allProducts.Count} products found" );
-            return allProducts.Select( p => new ProductResponseModel( p ) );
+            _logger.LogInformation( $"{allProducts.Count()} products found" );
+            return Ok(allProducts.Select( p => new ProductResponseModel( p ) ));
         }
 
         [HttpPost]
         [Route("api/products")]
-        public async Task<dynamic> CreateProduct( ProductRequestModel request )
+        public async Task<IActionResult> CreateProduct( ProductRequestModel request )
         {
             _logger.LogInformation( "Trying to add product..." );
 
@@ -59,7 +59,7 @@ namespace E_CommTask.Controllers
 
             var newProduct = request.MapToProduct();
 
-            await _productService.Insert( newProduct );
+            await _productService.InsertAsync( newProduct );
 
             _logger.LogInformation( $"Product {newProduct.Name} added" );
 

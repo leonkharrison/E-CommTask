@@ -13,8 +13,8 @@ namespace E_CommTask
 
             // Add services to the container.
             builder.Services.AddDbContext<ApplicationDbContext>();
-            builder.Services.AddScoped<IOrdersService, OrdersService>();
-            builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<IOrdersRepo, OrdersService>();
+            builder.Services.AddScoped<IProductRepo, ProductService>();
 
             builder.Services.AddControllers().AddJsonOptions( x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles );
